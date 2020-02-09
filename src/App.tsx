@@ -162,6 +162,29 @@ const App: React.FC = () => {
       })
   }
 
+  const exportBallotIDs = () => {
+    fetch(`/scan/export`, {
+      method: 'post',
+    })
+      .then(response => response.text())
+      .then(cvrs => {
+        const ballotIDs: string[] = []
+        cvrs.split('\n').forEach(cvr => {
+          try {
+            ballotIDs.push(JSON.parse(cvr)['_ballotId'])
+          } catch (error) {
+            // eslint-disable-line no-empty
+          }
+        })
+
+        fileDownload(
+          JSON.stringify(ballotIDs),
+          'vx-ballot-ids.json',
+          'application/json'
+        )
+      })
+  }
+
   const updateStatus = () => {
     fetch('/scan/status')
       .then(r => r.json())
@@ -221,7 +244,8 @@ const App: React.FC = () => {
           <Button onClick={unconfigureServer}>Factory Reset</Button>
           <Button onClick={zeroData}>Zero</Button>
           <Button onClick={ejectUSB}>Eject USB</Button>
-          <Button onClick={exportResults}>Export</Button>
+          <Button onClick={exportBallotIDs}>Ballot IDs</Button>
+          <Button onClick={exportResults}>CVRs</Button>
           <Button disabled={isScanning} primary onClick={scanBatch}>
             Scan New Batch
           </Button>
