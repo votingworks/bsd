@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Modal from 'react-modal'
 import fileDownload from 'js-file-download'
 
 import {
@@ -35,6 +36,7 @@ const App: React.FC = () => {
     []
   )
   const [status, setStatus] = useState<ScannerStatus>({ batches: [] })
+  const [lastBallot, setLastBallot] = useState('')
   const { batches } = status
   const isScanning = batches && batches[0] && !batches[0].endedAt
 
@@ -162,6 +164,16 @@ const App: React.FC = () => {
       })
   }
 
+  const showLastBallot = () => {
+    fetch(`/scan/export`, {
+      method: 'post',
+    })
+      .then(response => response.text())
+      .then(text => {
+        setLastBallot(text.split('\n').slice(-1)[0])
+      })
+  }
+
   const updateStatus = () => {
     fetch('/scan/status')
       .then(r => r.json())
@@ -195,6 +207,12 @@ const App: React.FC = () => {
 
   useEffect(updateStatus, [])
 
+  const closeModal = () => {
+    setLastBallot('')
+  }
+
+  const lastBallotObject = lastBallot ? JSON.parse(lastBallot) : {}
+
   if (election) {
     if (!status.electionHash) {
       configureServer(election)
@@ -222,10 +240,22 @@ const App: React.FC = () => {
           <Button onClick={zeroData}>Zero</Button>
           <Button onClick={ejectUSB}>Eject USB</Button>
           <Button onClick={exportResults}>Export</Button>
+          <Button onClick={showLastBallot}>Last Ballot</Button>
           <Button disabled={isScanning} primary onClick={scanBatch}>
             Scan New Batch
           </Button>
         </ButtonBar>
+        <Modal isOpen={!!lastBallot} onRequestClose={closeModal}>
+          <h2>Last Ballot Card Scanned</h2>
+          {Object.keys(lastBallotObject).map(
+            title =>
+              title[0] !== '_' && (
+                <p>
+                  <b>{title}</b>: {lastBallotObject[title]}
+                </p>
+              )
+          )}
+        </Modal>
       </Screen>
     )
   }
