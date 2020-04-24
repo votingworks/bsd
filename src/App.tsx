@@ -247,14 +247,23 @@ const App: React.FC = () => {
         </ButtonBar>
         <Modal isOpen={!!lastBallot} onRequestClose={closeModal}>
           <h2>Last Ballot Card Scanned</h2>
-          {Object.keys(lastBallotObject).map(
-            title =>
-              title[0] !== '_' && (
-                <p>
-                  <b>{title}</b>: {lastBallotObject[title]}
-                </p>
-              )
-          )}
+          <table
+            style={{ border: '2px solid black', borderCollapse: 'collapse' }}
+          >
+            {Object.keys(lastBallotObject).map(
+              title =>
+                title[0] !== '_' && (
+                  <tr>
+                    <th style={{ border: '1px solid black', padding: '10px' }}>
+                      {title}
+                    </th>
+                    <td style={{ border: '1px solid black', padding: '10px' }}>
+                      {lastBallotObject[title]}
+                    </td>
+                  </tr>
+                )
+            )}
+          </table>
         </Modal>
       </Screen>
     )
