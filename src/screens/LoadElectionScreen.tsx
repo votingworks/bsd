@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 
+import Brand from '../components/Brand'
+import ButtonBar from '../components/ButtonBar'
+import USBController from '../components/USBController'
 import Prose from '../components/Prose'
 import Main, { MainChild } from '../components/Main'
-import MainNav from '../components/MainNav'
 import Screen from '../components/Screen'
 import Text from '../components/Text'
 import { SetElection } from '../config/types'
@@ -126,9 +128,9 @@ const LoadElectionConfigScreen = ({ setElection }: Props) => {
   }
 
   return (
-    <Screen {...getRootProps()}>
-      <Main noPadding>
-        <MainChild center padded>
+    <Screen>
+      <Main noPadding {...getRootProps()}>
+        <MainChild center padded maxWidth={false}>
           <input {...getInputProps()} />
           <Prose textCenter>
             {isDragActive ? (
@@ -146,7 +148,10 @@ const LoadElectionConfigScreen = ({ setElection }: Props) => {
           </Prose>
         </MainChild>
       </Main>
-      <MainNav />
+      <ButtonBar secondary naturalOrder separatePrimaryButton>
+        <Brand>VxScan</Brand>
+        <USBController />
+      </ButtonBar>
     </Screen>
   )
 }

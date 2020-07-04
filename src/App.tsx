@@ -14,6 +14,7 @@ import {
 import Brand from './components/Brand'
 import Button from './components/Button'
 import ButtonBar from './components/ButtonBar'
+import USBController from './components/USBController'
 import Main, { MainChild } from './components/Main'
 import Screen from './components/Screen'
 import useInterval from './hooks/useInterval'
@@ -139,14 +140,6 @@ const App: React.FC = () => {
     }
   }, [])
 
-  const ejectUSB = useCallback(
-    async () =>
-      fetch('/usbstick/eject', {
-        method: 'post',
-      }),
-    []
-  )
-
   const zeroData = useCallback(async () => {
     try {
       fetch('/scan/zero', {
@@ -252,7 +245,7 @@ const App: React.FC = () => {
             )}
             <Button onClick={unconfigureServer}>Factory Reset</Button>
             <Button onClick={zeroData}>Zero</Button>
-            <Button onClick={ejectUSB}>Eject USB</Button>
+            <USBController />
             <Button onClick={exportResults}>Export</Button>
             <Button disabled={isScanning} primary onClick={scanBatch}>
               Scan New Batch
