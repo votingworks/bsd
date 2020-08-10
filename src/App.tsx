@@ -10,6 +10,7 @@ import {
   ScanStatusResponse,
   CardReadLongResponse,
   CardReadResponse,
+  ProblemBallot,
 } from './config/types'
 
 import Brand from './components/Brand'
@@ -23,6 +24,7 @@ import useInterval from './hooks/useInterval'
 import LoadElectionScreen from './screens/LoadElectionScreen'
 import DashboardScreen from './screens/DashboardScreen'
 import BallotReviewScreen from './screens/BallotReviewScreen'
+import ProblemBallotScreen from './screens/ProblemBallotScreen'
 
 import 'normalize.css'
 import './App.css'
@@ -48,6 +50,8 @@ const App: React.FC = () => {
 
   const [isScanning, setIsScanning] = useState(false)
 
+  const [problemBallot, setProblemBallot] = useState<ProblemBallot|undefined>()
+
   useEffect(() => {
     getConfig().then((config) => {
       setElection(config.election)
@@ -65,6 +69,10 @@ const App: React.FC = () => {
         if (newStatus.batches[0]?.endedAt) {
           setIsScanning(false)
         }
+	if (newStatus && newStatus.problemBallots && newStatus.problemBallots.length > 0) {
+	  console.log("setting problem ballot")
+	  setProblemBallot(newStatus.problemBallots[0])
+	}
         return newStatus
       })
     } catch (error) {
@@ -233,6 +241,14 @@ const App: React.FC = () => {
     updateStatus()
   }, [updateStatus])
 
+  const continueScanningAfterProblem = async () => {
+    setProblemBallot(undefined)
+    
+    await fetch('/scan/scanContinue', {
+      method: 'post',
+    })
+  }  
+
   if (election) {
     return (
       <BrowserRouter>
@@ -245,66 +261,75 @@ const App: React.FC = () => {
               />
             </Route>
             <Route path="/">
-              <Main>
-                <MainChild maxWidth={false}>
-                  <DashboardScreen
-                    adjudicationStatus={adjudication}
-                    invalidateBatch={invalidateBatch}
-                    isScanning={isScanning}
-                    status={{
-                      ...status,
-                      batches: status.batches.filter(
-                        (batch) => !pendingDeleteBatchIds.includes(batch.id)
-                      ),
-                    }}
-                    deleteBatch={deleteBatch}
-                  />
-                </MainChild>
-              </Main>
-              <ButtonBar secondary naturalOrder separatePrimaryButton>
-                <Brand>
-                  VxScan
-                  {isTestMode && (
-                    <React.Fragment>&nbsp;TEST&nbsp;MODE</React.Fragment>
-                  )}
-                </Brand>
-                <USBController />
-                {typeof isTestMode === 'boolean' && (
-                  <Button small onPress={toggleTestMode}>
-                    {isTestMode ? 'Live mode…' : 'Test mode…'}
-                  </Button>
-                )}
-                <Button small onPress={unconfigureServer}>
-                  Factory Reset
-                </Button>
-                <Button small onPress={zeroData}>
-                  Zero
-                </Button>
-                <LinkButton
-                  small
-                  to="/review"
-                  disabled={adjudication.remaining === 0}
-                >
-                  Review{' '}
-                  {!!adjudication.remaining &&
-                    pluralize('ballots', adjudication.remaining, true)}
-                </LinkButton>
-                <Button
-                  small
-                  onPress={exportResults}
-                  disabled={adjudication.remaining > 0}
-                  title={
-                    adjudication.remaining > 0
-                      ? 'You cannot export results until all ballots have been adjudicated.'
-                      : undefined
-                  }
-                >
-                  Export
-                </Button>
-                <Button small disabled={isScanning} primary onPress={scanBatch}>
-                  Scan New Batch
-                </Button>
-              </ButtonBar>
+	      {problemBallot ? (
+		<ProblemBallotScreen
+		  problemBallot={problemBallot}
+		doContinue={continueScanningAfterProblem}
+		/>
+	      ) : (
+		<React.Fragment>
+		  <Main>
+                    <MainChild maxWidth={false}>
+                      <DashboardScreen
+			adjudicationStatus={adjudication}
+			invalidateBatch={invalidateBatch}
+			isScanning={isScanning}
+			status={{
+			  ...status,
+			  batches: status.batches.filter(
+			    (batch) => !pendingDeleteBatchIds.includes(batch.id)
+			  ),
+			}}
+			deleteBatch={deleteBatch}
+                      />
+                    </MainChild>
+		  </Main>
+		  <ButtonBar secondary naturalOrder separatePrimaryButton>
+                    <Brand>
+                      VxScan
+                      {isTestMode && (
+			<React.Fragment>&nbsp;TEST&nbsp;MODE</React.Fragment>
+                      )}
+                    </Brand>
+                    <USBController />
+                    {typeof isTestMode === 'boolean' && (
+                      <Button small onPress={toggleTestMode}>
+			{isTestMode ? 'Live mode…' : 'Test mode…'}
+                      </Button>
+                    )}
+                    <Button small onPress={unconfigureServer}>
+                      Factory Reset
+                    </Button>
+                    <Button small onPress={zeroData}>
+                      Zero
+                    </Button>
+                    <LinkButton
+                      small
+                      to="/review"
+                      disabled={adjudication.remaining === 0}
+                    >
+                      Review{' '}
+                      {!!adjudication.remaining &&
+                       pluralize('ballots', adjudication.remaining, true)}
+                    </LinkButton>
+                    <Button
+                      small
+                      onPress={exportResults}
+                      disabled={adjudication.remaining > 0}
+                      title={
+                      adjudication.remaining > 0
+					     ? 'You cannot export results until all ballots have been adjudicated.'
+					     : undefined
+                      }
+                    >
+                      Export
+                    </Button>
+                    <Button small disabled={isScanning} primary onPress={scanBatch}>
+                      Scan New Batch
+                    </Button>
+		  </ButtonBar>
+		</React.Fragment>
+	      )}
             </Route>
           </Switch>
         </Screen>
@@ -315,4 +340,4 @@ const App: React.FC = () => {
   return <LoadElectionScreen setElection={setElection} />
 }
 
-export default App
+  export default App

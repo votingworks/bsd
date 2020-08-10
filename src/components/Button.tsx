@@ -16,7 +16,7 @@ export interface ButtonInterface {
   readonly warning?: boolean
 }
 
-interface StyledButtonProps
+export interface StyledButtonProps
   extends ButtonInterface,
     React.PropsWithoutRef<JSX.IntrinsicElements['button']> {}
 

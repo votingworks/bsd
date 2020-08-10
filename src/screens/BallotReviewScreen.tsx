@@ -21,6 +21,7 @@ import Main, { MainChild } from '../components/Main'
 import ButtonBar from '../components/ButtonBar'
 import Brand from '../components/Brand'
 import Button from '../components/Button'
+import PrintButton from '../components/PrintButton'
 import LinkButton from '../components/LinkButton'
 import Text from '../components/Text'
 import Checkbox from '../components/Checkbox'
@@ -320,6 +321,23 @@ export default function BallotReviewScreen({
                   </Prose>
                 ))}
               </Contests>
+              <p>
+                &nbsp;
+                <br />
+                &nbsp;
+                <br />
+                Once you are done adjudicating the marks on this ballot, you
+                may:
+                <br />
+                <br />
+                <PrintButton
+                  primary
+                  disabled={!canSave}
+                  afterPress={onSaveClick}
+                >
+                  Print Duplicate Ballot, Save, &amp; Next
+                </PrintButton>
+              </p>
             </div>
           </React.Fragment>
         </BallotReviewColumns>
@@ -336,19 +354,6 @@ export default function BallotReviewScreen({
         <LinkButton small to="/">
           Dashboard
         </LinkButton>
-        <Button
-          small
-          primary
-          disabled={!canSave}
-          onPress={onSaveClick}
-          title={
-            canSave
-              ? undefined
-              : 'Cannot save until all contests have been adjudicated'
-          }
-        >
-          Save &amp; Next
-        </Button>
       </ButtonBar>
     </React.Fragment>
   )

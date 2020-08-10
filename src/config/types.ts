@@ -103,10 +103,16 @@ export interface MarkInfo {
   ballotSize: Size
 }
 
+export interface ProblemBallot {
+  ballotId: number
+  ballotSeq: number
+}
+
 export interface ScanStatusResponse {
   electionHash?: string
   batches: Batch[]
   adjudication: AdjudicationStatus
+  problemBallots?: ProblemBallot[]
 }
 
 export type GetConfigRequest = {}
