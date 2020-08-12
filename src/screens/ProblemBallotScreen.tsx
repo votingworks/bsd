@@ -62,7 +62,7 @@ export default function ProblemBallotScreen({
     ;(async () => {
       setBallot(await fetchBallotInfo(problemBallot.ballotId.toString()))
     })()
-  })
+  }, [])
 
   if (!ballot) {
     return (
@@ -153,6 +153,12 @@ export default function ProblemBallotScreen({
         </Brand>
 	<div>&nbsp;</div>
       </ButtonBar>
+      <HandMarkedPaperBallot
+	ballotStyleId="1"
+      election={election}
+      precinctId="6522"
+      locales={{primary: "en-US"}}
+      />
     </React.Fragment>
   )
 }
