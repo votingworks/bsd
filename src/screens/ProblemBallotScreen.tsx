@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import pluralize from 'pluralize'
 import { Election } from '@votingworks/ballot-encoder'
 
@@ -54,9 +54,10 @@ export default function ProblemBallotScreen({
   problemBallot,
   doContinue
 }: Props) {
-  const history = useHistory()
   const [ballot, setBallot] = useState<ReviewBallot|undefined>()
 
+  console.log("rendering problem ballot screen")
+  
   useEffect(() => {
     ;(async () => {
       setBallot(await fetchBallotInfo(problemBallot.ballotId.toString()))

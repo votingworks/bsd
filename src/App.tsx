@@ -253,6 +253,8 @@ const App: React.FC = () => {
     })
   }  
 
+  console.log("rendering app")
+  
   if (election) {
     return (
       <AppContext.Provider
