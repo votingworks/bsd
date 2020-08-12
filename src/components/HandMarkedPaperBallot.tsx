@@ -614,7 +614,7 @@ const HandMarkedPaperBallot = ({
                 <Prose>
                   <h2>
                     {isLiveMode
-                      ? t('Official Ballot', { lng: locales.primary })
+                      ? t('Adjudicated Ballot #____', { lng: locales.primary })
                       : t('TEST BALLOT', { lng: locales.primary })}
                   </h2>
                   <h3>
