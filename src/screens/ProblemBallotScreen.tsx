@@ -154,9 +154,9 @@ export default function ProblemBallotScreen({
 	<div>&nbsp;</div>
       </ButtonBar>
       <HandMarkedPaperBallot
-	ballotStyleId="1"
+	ballotStyleId={problemBallot.ballotStyleId}
       election={election}
-      precinctId="6522"
+      precinctId={problemBallot.precinctId}
       locales={{primary: "en-US"}}
       />
     </React.Fragment>

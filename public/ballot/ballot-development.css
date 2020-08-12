@@ -20,6 +20,7 @@
 }
 
 /* Enable to view the QA code with margins as border */
+
 /* @media print {
   @page :left {
     @bottom-left-corner {
@@ -38,6 +39,7 @@
 } */
 
 /* Enable to view bottom margin area */
+
 /* .pagedjs_margin-bottom-left-corner-holder,
 .pagedjs_margin-bottom,
 .pagedjs_margin-bottom-right-corner-holder {

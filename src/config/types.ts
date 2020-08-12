@@ -106,6 +106,8 @@ export interface MarkInfo {
 export interface ProblemBallot {
   ballotId: number
   ballotSeq: number
+  ballotStyleId: string
+  precinctId: string  
 }
 
 export interface ScanStatusResponse {
