@@ -26,8 +26,7 @@ const PrintButton = ({
     if (title) {
       document.title = title
     }
-    // HACK: not actually printing for now
-    // await (window.kiosk ?? window).print()
+    await (window.kiosk ?? window).print()
     if (title) {
       document.title = documentTitle
     }
