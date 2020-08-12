@@ -26,13 +26,12 @@ const PrintButton = ({
     if (title) {
       document.title = title
     }
+    if (afterPress) {
+      window.setTimeout(afterPress, 2000)
+    }
     await (window.kiosk ?? window).print()
     if (title) {
       document.title = documentTitle
-    }
-
-    if (afterPress) {
-      window.setTimeout(afterPress, 2000)
     }
   }
 
