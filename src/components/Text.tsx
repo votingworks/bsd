@@ -5,12 +5,18 @@ import GLOBALS from '../config/globals'
 
 interface Props {
   bold?: boolean
+  light?: boolean
   center?: boolean
   error?: boolean
+  left?: boolean
   success?: boolean
   italic?: boolean
   muted?: boolean
+  normal?: boolean
   narrow?: boolean
+  noWrap?: boolean
+  preLine?: boolean
+  right?: boolean
   small?: boolean
   warning?: boolean
   warningIcon?: boolean
@@ -44,22 +50,28 @@ const Text = styled('p')<Props>`
   margin-right: ${({ narrow }) => (narrow ? 'auto' : undefined)};
   margin-left: ${({ narrow }) => (narrow ? 'auto' : undefined)};
   max-width: ${({ narrow }) => (narrow ? '33ch' : undefined)};
-  text-align: ${({ center }) => (center ? 'center' : undefined)};
+  text-align: ${({ center, right, left }) =>
+    (left && 'left') ||
+					   (center && 'center') ||
+					   (right && 'right') ||
+					   undefined};
+  white-space: ${({ noWrap, preLine }) =>
+    noWrap ? 'nowrap' : preLine ? 'pre-line' : undefined};
   color: ${({ error, muted, success, warning, white }) =>
     (error && 'red') ||
-    (warning && 'darkorange') ||
-    (success && 'rgb(0, 128, 0)') ||
-    (white && '#FFFFFF') ||
-    (muted && 'gray') ||
-    undefined};
+							(warning && 'darkorange') ||
+							(success && 'rgb(0, 128, 0)') ||
+							(white && '#FFFFFF') ||
+							(muted && 'gray') ||
+							undefined};
   @media print {
     color: ${({ error, muted, success, warning, white }) =>
       (error && 'black') ||
-      (warning && 'black') ||
-      (success && 'black') ||
-      (white && '#FFFFFF') ||
-      (muted && 'black') ||
-      undefined};
+							  (warning && 'black') ||
+							  (success && 'black') ||
+							  (white && '#FFFFFF') ||
+							  (muted && 'black') ||
+							  undefined};
   }
   font-size: ${({ small }) => (small ? '0.8rem' : undefined)};
   font-weight: ${({ bold }) => (bold ? '600' : undefined)};
@@ -67,9 +79,9 @@ const Text = styled('p')<Props>`
   word-break: ${({ wordBreak }) => (wordBreak ? 'break-word' : undefined)};
   /* stylelint-disable-next-line value-keyword-case */
   ${({ warningIcon, voteIcon }) => (warningIcon || voteIcon) && iconStyles}
-`
+  `
 
-export const TextWithLineBreaks = ({ text }: { text: string }) => (
+  export const TextWithLineBreaks = ({ text }: { text: string }) => (
   <React.Fragment>
     {text.split(/[\n|\r]{2}/g).map((x) => (
       <p key={x}>
@@ -82,6 +94,14 @@ export const TextWithLineBreaks = ({ text }: { text: string }) => (
       </p>
     ))}
   </React.Fragment>
-)
+  )
+
+export const NoWrap = styled.span`
+    white-space: nowrap;
+`
+
+export const Monospace = styled.span`
+    font-family: monospace;
+`
 
 export default Text

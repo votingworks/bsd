@@ -137,5 +137,10 @@ export interface CardReadLongResponse {
   longValue: string
 }
 
+export interface BallotLocale {
+  primary: string
+  secondary?: string
+}
+
 // eslint-disable-next-line import/no-cycle
 export * from './types/ballot-review'

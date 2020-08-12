@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useRef } from 'react'
 import { BrowserRouter, Route, Switch, useHistory } from 'react-router-dom'
 import fileDownload from 'js-file-download'
 import pluralize from 'pluralize'
@@ -12,6 +12,8 @@ import {
   CardReadResponse,
   ProblemBallot,
 } from './config/types'
+
+import AppContext from './contexts/AppContext'
 
 import Brand from './components/Brand'
 import Button from './components/Button'
@@ -33,6 +35,7 @@ import { get as getConfig, patch as patchConfig } from './api/config'
 import LinkButton from './components/LinkButton'
 
 const App: React.FC = () => {
+  const printBallotRef = useRef<HTMLDivElement>(null)
   const history = useHistory()
   const [cardServerAvailable, setCardServerAvailable] = useState(true)
   const [election, setElection] = useState<OptionalElection>()
@@ -66,6 +69,7 @@ const App: React.FC = () => {
         if (JSON.stringify(prevStatus) === JSON.stringify(newStatus)) {
           return prevStatus
         }
+	console.log("new status")
         if (newStatus.batches[0]?.endedAt) {
           setIsScanning(false)
         }
@@ -251,26 +255,32 @@ const App: React.FC = () => {
 
   if (election) {
     return (
-      <BrowserRouter>
-        <Screen>
-          <Switch>
-            <Route path="/review">
-              <BallotReviewScreen
-                adjudicationStatus={adjudication}
-                isTestMode={isTestMode}
-              />
-            </Route>
-            <Route path="/">
-	      {problemBallot ? (
-		<ProblemBallotScreen
-		  problemBallot={problemBallot}
-		doContinue={continueScanningAfterProblem}
+      <AppContext.Provider
+	value={{
+          printBallotRef,
+	}}
+      >
+	<BrowserRouter>
+          <Screen>
+            <Switch>
+              <Route path="/review">
+		<BallotReviewScreen
+                  adjudicationStatus={adjudication}
+                  isTestMode={isTestMode}
 		/>
-	      ) : (
-		<React.Fragment>
-		  <Main>
-                    <MainChild maxWidth={false}>
-                      <DashboardScreen
+              </Route>
+              <Route path="/">
+		{problemBallot ? (
+		  <ProblemBallotScreen
+		    election={election}
+		    problemBallot={problemBallot}
+		  doContinue={continueScanningAfterProblem}
+		  />
+		) : (
+		  <React.Fragment>
+		    <Main>
+                      <MainChild maxWidth={false}>
+			<DashboardScreen
 			adjudicationStatus={adjudication}
 			invalidateBatch={invalidateBatch}
 			isScanning={isScanning}
@@ -281,59 +291,61 @@ const App: React.FC = () => {
 			  ),
 			}}
 			deleteBatch={deleteBatch}
-                      />
-                    </MainChild>
-		  </Main>
-		  <ButtonBar secondary naturalOrder separatePrimaryButton>
-                    <Brand>
-                      VxScan
-                      {isTestMode && (
-			<React.Fragment>&nbsp;TEST&nbsp;MODE</React.Fragment>
+			/>
+                      </MainChild>
+		    </Main>
+		    <ButtonBar secondary naturalOrder separatePrimaryButton>
+                      <Brand>
+			VxScan
+			{isTestMode && (
+			  <React.Fragment>&nbsp;TEST&nbsp;MODE</React.Fragment>
+			)}
+                      </Brand>
+                      <USBController />
+                      {typeof isTestMode === 'boolean' && (
+			<Button small onPress={toggleTestMode}>
+			  {isTestMode ? 'Live mode…' : 'Test mode…'}
+			</Button>
                       )}
-                    </Brand>
-                    <USBController />
-                    {typeof isTestMode === 'boolean' && (
-                      <Button small onPress={toggleTestMode}>
-			{isTestMode ? 'Live mode…' : 'Test mode…'}
+                      <Button small onPress={unconfigureServer}>
+			Factory Reset
                       </Button>
-                    )}
-                    <Button small onPress={unconfigureServer}>
-                      Factory Reset
-                    </Button>
-                    <Button small onPress={zeroData}>
-                      Zero
-                    </Button>
-                    <LinkButton
-                      small
-                      to="/review"
-                      disabled={adjudication.remaining === 0}
-                    >
-                      Review{' '}
-                      {!!adjudication.remaining &&
-                       pluralize('ballots', adjudication.remaining, true)}
-                    </LinkButton>
-                    <Button
-                      small
-                      onPress={exportResults}
-                      disabled={adjudication.remaining > 0}
-                      title={
-                      adjudication.remaining > 0
-					     ? 'You cannot export results until all ballots have been adjudicated.'
-					     : undefined
-                      }
-                    >
-                      Export
-                    </Button>
-                    <Button small disabled={isScanning} primary onPress={scanBatch}>
-                      Scan New Batch
-                    </Button>
-		  </ButtonBar>
-		</React.Fragment>
-	      )}
-            </Route>
-          </Switch>
-        </Screen>
-      </BrowserRouter>
+                      <Button small onPress={zeroData}>
+			Zero
+                      </Button>
+                      <LinkButton
+			small
+			to="/review"
+			disabled={adjudication.remaining === 0}
+                      >
+			Review{' '}
+			{!!adjudication.remaining &&
+			 pluralize('ballots', adjudication.remaining, true)}
+                      </LinkButton>
+                      <Button
+			small
+			onPress={exportResults}
+			disabled={adjudication.remaining > 0}
+			title={
+			adjudication.remaining > 0
+					       ? 'You cannot export results until all ballots have been adjudicated.'
+					       : undefined
+			}
+                      >
+			Export
+                      </Button>
+                      <Button small disabled={isScanning} primary onPress={scanBatch}>
+			Scan New Batch
+                      </Button>
+		    </ButtonBar>
+		  </React.Fragment>
+		)}
+              </Route>
+            </Switch>
+	    <div ref={printBallotRef} />	  
+          </Screen>
+	</BrowserRouter>
+      </AppContext.Provider>
     )
   }
 

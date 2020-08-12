@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { useParams, useHistory } from 'react-router-dom'
 import pluralize from 'pluralize'
+import { Election } from '@votingworks/ballot-encoder'
 
 import Prose from '../components/Prose'
 import {
   ReviewBallot,
   ProblemBallot
 } from '../config/types'
-import fetchJSON from '../util/fetchJSON'
 import Main, { MainChild } from '../components/Main'
 import ButtonBar from '../components/ButtonBar'
 import Brand from '../components/Brand'
@@ -18,6 +18,8 @@ import LinkButton from '../components/LinkButton'
 import Text from '../components/Text'
 
 import { fetchBallotInfo } from '../api/hmpb'
+
+import HandMarkedPaperBallot from '../components/HandMarkedPaperBallot'
 
 const BallotReviewColumns = styled.div`
     display: flex;
@@ -42,11 +44,13 @@ const BallotImageContainer = styled.div`
 `
 
 export interface Props {
+  election: Election
   problemBallot: ProblemBallot
   doContinue: () => void
 }
 
 export default function ProblemBallotScreen({
+  election,
   problemBallot,
   doContinue
 }: Props) {
@@ -139,7 +143,7 @@ export default function ProblemBallotScreen({
               width="100%"
             />
           </BallotImageContainer>
-	  {onScreenInstructions}
+	  {offScreenInstructions}
 	</BallotReviewColumns>
       </Main>
       <ButtonBar secondary naturalOrder separatePrimaryButton>
