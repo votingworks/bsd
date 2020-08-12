@@ -150,7 +150,7 @@ interface PagedJSPage {
   id: string
 }
 class PagedQRCodeInjector extends Handler {
-/*  afterRendered(pages: PagedJSPage[]) {
+  afterRendered(pages: PagedJSPage[]) {
     pages.forEach((page) => {
       const { pageNumber } = page.element.dataset
       const qrCodeTarget = document
@@ -183,7 +183,7 @@ class PagedQRCodeInjector extends Handler {
         )
       }
     })
-  }*/
+  }
 }
 registerHandlers(PagedQRCodeInjector)
 
