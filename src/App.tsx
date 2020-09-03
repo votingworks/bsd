@@ -29,11 +29,13 @@ import fetchJSON from './util/fetchJSON'
 import { get as getConfig, patch as patchConfig } from './api/config'
 import LinkButton from './components/LinkButton'
 import MainNav from './components/MainNav'
+import StatusFooter from './components/StatusFooter'
 
 const App: React.FC = () => {
   const history = useHistory()
   const [cardServerAvailable, setCardServerAvailable] = useState(true)
   const [election, setElection] = useState<OptionalElection>()
+  const [electionHash, setElectionHash] = useState<string>()
   // used to hide batches while they're being deleted
   const [pendingDeleteBatchIds, setPendingDeleteBatchIds] = useState<number[]>(
     []
@@ -58,6 +60,7 @@ const App: React.FC = () => {
   const updateStatus = useCallback(async () => {
     try {
       const newStatus = await fetchJSON<ScanStatusResponse>('/scan/status')
+      setElectionHash(newStatus.electionHash)
       setStatus((prevStatus) => {
         if (JSON.stringify(prevStatus) === JSON.stringify(newStatus)) {
           return prevStatus
@@ -316,6 +319,7 @@ const App: React.FC = () => {
                   Scan New Batch
                 </Button>
               </MainNav>
+              <StatusFooter election={election} electionHash={electionHash} />
             </Route>
           </Switch>
         </Screen>
