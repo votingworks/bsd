@@ -26,6 +26,15 @@ cd bsd
 yarn install
 ```
 
+### Troubleshooting
+
+You may need to install:
+
+```
+sudo apt install -y build-essential
+sudo apt install -y libpng-dev libjpeg-dev
+```
+
 ## Run
 
 1. Start [`module-scan`](https://github.com/votingworks/module-scan/).
